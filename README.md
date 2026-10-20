@@ -1,6 +1,7 @@
-# TokoKita — Template E-Commerce Next.js (PRD v1.0)
+# tokobagus.com — Template E-Commerce Editorial Next.js
 
-Storefront + Admin Panel sesuai `PRD-E-Commerce-NextJS.md` (Fase 1 MVP + fondasi Fase 2).
+Template storefront + admin panel bergaya editorial warm-luxury. Seluruh demo berjalan di sisi klien
+(Zustand + localStorage) tanpa database, cocok untuk presentasi, portofolio, atau titik awal proyek.
 
 ## Jalankan
 
@@ -9,36 +10,45 @@ npm install
 npm run dev   # http://localhost:3000
 ```
 
-Demo tanpa database: katalog, keranjang (Zustand + localStorage), checkout, dan pesanan memakai data mock di `src/lib/data.ts`. Skema produksi (PostgreSQL + Prisma) tersedia di `prisma/schema.prisma`.
+- Storefront: `http://localhost:3000`
+- Admin panel: `http://localhost:3000/admin` — login dengan email apa pun + kata sandi min. 6 karakter
+  (tersedia tombol "Isi kredensial demo").
+- Akun pelanggan demo: `alya@example.com` (kata sandi bebas, min. 6 karakter).
 
-## Rute
+## Fitur demo
 
-| Area | Rute |
-|---|---|
-| Home | `/` |
-| Katalog + filter/sort/pagination (query params) | `/products` |
-| Kategori | `/category/[slug]` |
-| Detail produk + varian + ulasan + JSON-LD | `/products/[slug]` |
-| Pencarian + saran | `/search?q=` |
-| Keranjang + voucher | `/cart` |
-| Checkout (tamu/terdaftar, ongkir, voucher) | `/checkout` |
-| Pembayaran + countdown | `/checkout/[orderId]/payment` |
-| Sukses | `/checkout/success` |
-| Auth | `/login`, `/register`, `/forgot-password` |
-| Akun | `/account`, `/account/orders`, `/account/orders/[id]`, `/account/addresses`, `/account/profile`, `/account/wishlist` |
-| Statis (SSG) | `/about`, `/contact`, `/faq`, `/terms`, `/privacy`, `/shipping-policy`, `/return-policy` |
-| Admin | `/admin/*` (dashboard, produk, kategori, inventori, pesanan, pelanggan, promo, konten, laporan, pengaturan, user) |
-| API | `/api/products`, `/api/checkout`, `/api/shipping/rates`, `/api/upload`, `/api/webhooks/payment` |
+- **Katalog**: filter kategori/harga/rating/diskon/stok, sort, tampilan grid/list, pagination, quick view.
+- **PDP**: galeri multi-gambar (hover swap), varian, tabs deskripsi/spesifikasi/pengiriman/ulasan,
+  distribusi rating, tulis ulasan (terverifikasi dari pesanan), related & recently viewed.
+- **Keranjang & checkout**: voucher, progress gratis ongkir, 3 langkah checkout, pembayaran palsu
+  (VA/QRIS/e-wallet/kartu/COD) dengan countdown & halaman sukses.
+- **Akun**: pesanan + timeline, lacak kirim, wishlist, alamat (CRUD), profil & preferensi.
+- **Konten**: about, contact, FAQ, journal (daftar + detail), 4 halaman kebijakan dengan TOC,
+  lacak pesanan.
+- **Admin**: dashboard, produk (CRUD + varian), kategori, inventori, pesanan (status + resi),
+  pelanggan, voucher, banner, laporan (CSV export + reset demo), tim & akses, pengaturan toko.
 
 ## Voucher demo
 
-- `HEMAT10` — diskon 10% (maks Rp50rb, min Rp100rb)
-- `POTONGAN20RB` — potongan Rp20rb (min Rp150rb)
-- `GRATISONGKIR` — gratis ongkir (min Rp50rb)
+- `TOKOBAGUS10` — diskon 10% (maks Rp250.000, min Rp500.000)
+- `GRATISONGKIR` — gratis ongkir (min Rp750.000)
+- `RITUAL50` — potongan Rp50.000 (min Rp300.000)
 
-## Catatan produksi (PRD §9–10)
+## Persistensi lokal
 
-- Stok: reserve saat order dibuat → kembalikan jika kedaluwarsa/batal → kurangi permanen saat webhook terkonfirmasi, dalam transaksi DB + row locking.
-- Webhook: verifikasi signature, idempotency, balas 200 cepat, simpan raw payload.
-- SEO: metadata per produk, JSON-LD Product, `sitemap.ts` + `robots.ts`, canonical via slug.
-- Keamanan: hash bcrypt/argon2, validasi server (Zod), rate limit login/checkout, role-check admin, ownership check per query.
+Semua state disimpan dengan prefix `tokobagus-*` (katalog, cart, wishlist, orders, akun, dsb.). Guna
+mengulang demo dari nol, gunakan **Admin → Laporan → Reset katalog & pesanan**, atau tombol reset di
+halaman **Akun → Profil**.
+
+## API (simulasi)
+
+`/api/products`, `/api/checkout`, `/api/shipping/rates`, `/api/upload`, dan
+`/api/webhooks/payment` tersedia sebagai kerangka integrasi (validasi, signature, idempotency);
+implementasi database masih berupa komentar di masing-masing route.
+
+## Catatan produksi
+
+- Ganti persistensi localStorage dengan API/database (skema contoh tersedia di `prisma/schema.prisma`).
+- Perkuat admin: autentikasi nyata + role-check di server, rate limit login, audit server-side.
+- Pembayaran: webhook dengan verifikasi signature, idempotency, dan row locking saat mengurangi stok.
+- SEO: metadata per halaman, JSON-LD produk, `sitemap.ts`/`robots.ts` sudah tersedia — sesuaikan domain.

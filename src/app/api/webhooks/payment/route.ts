@@ -21,7 +21,5 @@ export async function POST(req: Request) {
 
   // 3. Simpan raw payload untuk audit (tabel Payment.rawPayload), proses asinkron:
   //    - update Payment.status + Order.status (transaksi DB, kurangi stok permanen)
-  console.log("[webhook:payment]", eventId, payload);
-
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, event: eventId });
 }
